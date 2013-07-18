@@ -1,0 +1,28 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "precise32"
+  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+
+  config.vm.network :forwarded_port, guest: 15672, host: 7000
+
+  config.vm.provider :vmware_fusion do |v, override|
+    override.vm.box_url = "http://files.vagrantup.com/precise64_vmware.box"
+    override.vm.box = "precise64_vmware.box"
+  end
+
+  config.vm.provision :chef_solo do |chef|
+    chef.cookbooks_path = "../cookbooks"
+
+    chef.json = {
+        'caa-indexer' => {
+            :rabbitmq => {
+                :vhost => '/cover-art-archive'
+            }
+        }
+    }
+
+    chef.add_recipe "rabbitmq"
+    chef.add_recipe "apt"
+    chef.add_recipe "postgresql"
+    chef.add_recipe "caa-indexer"
+  end
+end 
