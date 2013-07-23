@@ -29,7 +29,8 @@ Vagrant.configure("2") do |config|
               :username => 'postgres'
             }
           },
-          :db_schema_sequence => 18
+          :db_schema_sequence => 18,
+          :replication_type => :rt_slave
         }
       }
     }

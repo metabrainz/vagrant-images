@@ -25,10 +25,10 @@ This brief tutorial assumes that you have nothing listening on ports 2222 or
 
 4. Wait while Chef provisions the virtual machine correctly.
 
-SSH is running on this virtual machine on port 2222. You can login as user
-`vagrant`, password `vagrant`. You may find it more convenient to simply run
-`vagrant ssh`. musicbrainz-server is checked out as the `musicbrainz` user in
-the `/home/musicbrainz/musicbrainz-server` directory.
+SSH is running on this virtual machine on port 2222. You can login as using
+`vagrant ssh`, or alternatively using `ssh` with the username `vagrant`,
+password `vagrant`. musicbrainz-server is checked out as the `musicbrainz` user
+in the `/home/musicbrainz/musicbrainz-server` directory.
 
 The database is served by PostgreSQL, listening on port 5432 in the virtual
 machine. This is not currently forwarded outside the virtual machine.
