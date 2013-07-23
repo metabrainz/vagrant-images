@@ -1,1 +1,0 @@
-# MusicBrainz Vagrant Images
