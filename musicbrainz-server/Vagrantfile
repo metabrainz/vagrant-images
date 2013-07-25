@@ -1,6 +1,7 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "precise32"
   config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+  config.vm.hostname = "musicbrainzvm"
 
   config.vm.provider :vmware_fusion do |v, override|
     override.vm.box_url = "http://files.vagrantup.com/precise64_vmware.box"
@@ -13,6 +14,13 @@ Vagrant.configure("2") do |config|
     chef.cookbooks_path = "../cookbooks"
 
     chef.json = {
+      "authorization" => {
+          "sudo" => {
+            "users" => [ "vagrant" ],
+            "passwordless" => true,
+            "include_sudoers_d" => true
+          }
+      },
       "musicbrainz-server" => {
         :revision => "vagrant",
         :dbdefs => {
@@ -24,22 +32,30 @@ Vagrant.configure("2") do |config|
               :username => "musicbrainz",
               :schema => "musicbrainz"
             },
+            :READONLY => {
+              :database => "musicbrainz",
+              :username => "musicbrainz",
+              :schema => "musicbrainz"
+            },
             :SYSTEM => {
               :database => 'template1',
               :username => 'postgres'
             }
           },
           :db_schema_sequence => 18,
-          :replication_type => :rt_slave
+          :replication_type => :rt_slave,
+          :lucene_server => "localhost:8080"
         }
       }
     }
 
     chef.add_recipe "apt"
+    chef.add_recipe "virtual-machine"
     chef.add_recipe "redis"
     chef.add_recipe "postgresql"
     chef.add_recipe "memcached"
     chef.add_recipe "musicbrainz-server::dev"
     chef.add_recipe "musicbrainz-server::slave"
+    chef.add_recipe "search-server"
   end
 end
