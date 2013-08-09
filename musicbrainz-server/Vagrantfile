@@ -1,18 +1,26 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "precise32"
   config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+  config.vm.hostname = "musicbrainzvm"
 
   config.vm.provider :vmware_fusion do |v, override|
     override.vm.box_url = "http://files.vagrantup.com/precise64_vmware.box"
     override.vm.box = "precise64_vmware.box"
   end
 
-  config.vm.network :forwarded_port, guest: 5000, host: 5000
+  config.vm.network :forwarded_port, guest: 80, host: 5000
 
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = "../cookbooks"
 
     chef.json = {
+      "authorization" => {
+          "sudo" => {
+            "users" => [ "vagrant" ],
+            "passwordless" => true,
+            "include_sudoers_d" => true
+          }
+      },
       "musicbrainz-server" => {
         :revision => "vagrant",
         :dbdefs => {
@@ -24,13 +32,19 @@ Vagrant.configure("2") do |config|
               :username => "musicbrainz",
               :schema => "musicbrainz"
             },
+            :READONLY => {
+              :database => "musicbrainz",
+              :username => "musicbrainz",
+              :schema => "musicbrainz"
+            },
             :SYSTEM => {
               :database => 'template1',
               :username => 'postgres'
             }
           },
           :db_schema_sequence => 18,
-          :replication_type => :rt_slave
+          :replication_type => :rt_slave,
+          :lucene_server => "localhost:8080"
         }
       }
     }
@@ -41,5 +55,7 @@ Vagrant.configure("2") do |config|
     chef.add_recipe "memcached"
     chef.add_recipe "musicbrainz-server::dev"
     chef.add_recipe "musicbrainz-server::slave"
+    chef.add_recipe "search-server"
+    chef.add_recipe "virtual-machine"
   end
 end
