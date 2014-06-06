@@ -22,7 +22,7 @@ Vagrant.configure("2") do |config|
           }
       },
       "musicbrainz-server" => {
-        :revision => "vagrant",
+        :revision => "master",
         :dbdefs => {
           :catalyst_debug => false,
           :development_server => true,
@@ -42,7 +42,7 @@ Vagrant.configure("2") do |config|
               :username => 'postgres'
             }
           },
-          :db_schema_sequence => 18,
+          :db_schema_sequence => 19,
           :replication_type => :rt_slave,
           :lucene_server => "localhost:8080"
         }
